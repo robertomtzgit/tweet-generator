@@ -6,11 +6,13 @@ import Retwit from './icons/Retwit'
 import Likes from './icons/Likes'
 import Share from './icons/Share'
 import UserImage from './icons/UserImage'
+import Dots from './icons/Dots'
 
 import { addLinks } from '../helpers/addLinks'
 import { useState } from 'react'
 import { blobToData } from '../helpers/blobToData'
 import { getDate } from '../helpers/getDate'
+import { formatCount } from '../helpers/formatCount';
 
 const TweetCard = () => {
     const currentDate = new Date().toISOString().slice(0, 16);
@@ -22,6 +24,11 @@ const TweetCard = () => {
     const [verified, setVerified] = useState(true);
     const [image, setImage] = useState();
     const [date, setDate] = useState("1h");
+    const [content, setContent] = useState(paragraph);
+    const [size, setSize] = useState("95")
+    const [comment, setCommet] =  useState("")
+    const [likes, setLikes] =  useState("")
+    const [retweet, setRetweet] =  useState("")
 
     const uploadAvatar = async e => {
         const objAvatar = e.target.files[0];
@@ -34,6 +41,22 @@ const TweetCard = () => {
     const handleDate = e => {
         //console.log(e.target.value);
         setDate(getDate(e.target.value));
+    }
+    const handleTextarea = e => {
+        setSize(content.length)
+        setContent(e.target.value)
+    }
+    const handleComments = e => {
+        const countClean = formatCount(e.target.value);
+        setCommet(countClean);
+    }
+    const handleLikes = e => {
+        const countClean = formatCount(e.target.value);
+        setLikes(countClean);
+    }
+    const handleRetweets = e => {
+        const countClean = formatCount(e.target.value);
+        setRetweet(countClean);
     }
     
     return (
@@ -51,8 +74,9 @@ const TweetCard = () => {
                             { verified && <Verified/> }
                             <p>{username} • {date}</p>
                         </div>
+                        <Dots/>
                     </header>
-                    <p dangerouslySetInnerHTML={{__html:addLinks(paragraph) }}></p>
+                    <p dangerouslySetInnerHTML={{__html:addLinks(content) }}></p>
                     {
                         image && 
                         <div className={styles.images}>
@@ -62,15 +86,15 @@ const TweetCard = () => {
                     <footer>
                         <div>
                             <Comments/>
-                            <span>34</span>
+                            <span>{comment}</span>
                         </div>
                         <div>
                             <Retwit/>
-                            <span>34</span>
+                            <span>{likes}</span>
                         </div>
                         <div>
                             <Likes/>
-                            <span>34</span>
+                            <span>{retweet}</span>
                         </div>
                         <div>
                             <Share/>
@@ -110,21 +134,25 @@ const TweetCard = () => {
                         </button>
                     </span>
                     <span>
-                        <label>Content:</label>
-                        <textarea cols="30" rows="5"></textarea>
+                        <label>Content: {`${size}/280`}</label>
+                        <textarea cols="30" rows="5"
+                            onChange={handleTextarea}
+                            value={content}
+                            maxLength="281"
+                        ></textarea>
                     </span>
                     <div>
                         <span>
                             <label>Comments:</label>
-                            <input type="number" />
+                            <input type="number" onChange={handleComments}/>
                         </span>
                         <span>
                             <label>Retweet:</label>
-                            <input type="number" />
+                            <input type="number" onChange={handleLikes}/>
                         </span>
                         <span>
                             <label>Likes:</label>
-                            <input type="number" />
+                            <input type="number" onChange={handleRetweets}/>
                         </span>
                     </div>
                 </form>

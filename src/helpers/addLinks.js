@@ -5,7 +5,7 @@ export const addLinks = paragraph => {
         if (item.includes("@") || item.includes("#") || item.includes("http")) {
             newText += `<span>${item}</span>`;
         } else {
-            newText += item;
+            newText += `${item} `;
         }
     })
     return newText;
