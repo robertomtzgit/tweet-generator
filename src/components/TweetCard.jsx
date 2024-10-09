@@ -5,15 +5,15 @@ import Comments from './icons/Comments'
 import Retwit from './icons/Retwit'
 import Likes from './icons/Likes'
 import Share from './icons/Share'
-import userImage from './icons/UserImage'
+import UserImage from './icons/UserImage'
 
 import { addLinks } from '../helpers/addLinks'
 import { useState } from 'react'
 import { blobToData } from '../helpers/blobToData'
-import UserImage from './icons/UserImage'
-
+import { getDate } from '../helpers/getDate'
 
 const TweetCard = () => {
+    const currentDate = new Date().toISOString().slice(0, 16);
     const paragraph = "This is a sample tweet. @mentions, #hashtags, https://links.com are all automatically converted.";
 
     const [avatar, setAvatar] = useState();
@@ -21,6 +21,7 @@ const TweetCard = () => {
     const [username, setUsername] = useState("@carlos25");
     const [verified, setVerified] = useState(true);
     const [image, setImage] = useState();
+    const [date, setDate] = useState("1h");
 
     const uploadAvatar = async e => {
         const objAvatar = e.target.files[0];
@@ -29,6 +30,10 @@ const TweetCard = () => {
     const uploadImage = async e => {
         const objAvatar = e.target.files[0];
         setImage(await blobToData(objAvatar))
+    }
+    const handleDate = e => {
+        //console.log(e.target.value);
+        setDate(getDate(e.target.value));
     }
     
     return (
@@ -44,7 +49,7 @@ const TweetCard = () => {
                         <div>
                             <h3>{name}</h3>
                             { verified && <Verified/> }
-                            <p>{username} • 2h</p>
+                            <p>{username} • {date}</p>
                         </div>
                     </header>
                     <p dangerouslySetInnerHTML={{__html:addLinks(paragraph) }}></p>
@@ -91,7 +96,7 @@ const TweetCard = () => {
                     </span>
                     <span>
                         <label>Tweet date</label>
-                        <input type="datetime-local" />
+                        <input type="datetime-local" onChange={handleDate} max={currentDate}/>
                     </span>
                     <span>
                         <label>Tweet image</label>
