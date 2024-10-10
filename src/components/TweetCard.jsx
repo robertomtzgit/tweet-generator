@@ -1,6 +1,6 @@
-import styles from '../styles/Card.module.css'
+import styles from '../styles/Card.module.css';
 
-import Verified from './icons/Verified'
+import Verified from './icons/Verified';
 import Comments from './icons/Comments'
 import Retwit from './icons/Retwit'
 import Likes from './icons/Likes'
@@ -8,21 +8,24 @@ import Share from './icons/Share'
 import UserImage from './icons/UserImage'
 import Dots from './icons/Dots'
 
-import { addLinks } from '../helpers/addLinks'
-import { useState } from 'react'
-import { blobToData } from '../helpers/blobToData'
-import { getDate } from '../helpers/getDate'
+import { addLinks } from '../helpers/addLinks';
+import { useRef, useState } from 'react';
+import { blobToData } from '../helpers/blobToData';
+import { getDate } from '../helpers/getDate';
 import { formatCount } from '../helpers/formatCount';
+
+import { toPng } from 'html-to-image'
+
 
 const TweetCard = () => {
     const currentDate = new Date().toISOString().slice(0, 16);
-    const paragraph = "This is a sample tweet. @mentions, #hashtags, https://links.com are all automatically converted.";
+    const paragraph = "This is a sample tweet. @mentions, #hashtags, https://links.com are all automatically converted."
 
     const [avatar, setAvatar] = useState();
     const [name, setName] = useState("Carlos");
     const [username, setUsername] = useState("@carlos25");
-    const [verified, setVerified] = useState(true);
     const [image, setImage] = useState();
+    const [verified, setVerified] = useState(true)
     const [date, setDate] = useState("1h");
     const [content, setContent] = useState(paragraph);
     const [size, setSize] = useState("95")
@@ -45,7 +48,7 @@ const TweetCard = () => {
     const handleTextarea = e => {
         setSize(content.length)
         setContent(e.target.value)
-    }
+    } 
     const handleComments = e => {
         const countClean = formatCount(e.target.value);
         setCommet(countClean);
@@ -58,11 +61,20 @@ const TweetCard = () => {
         const countClean = formatCount(e.target.value);
         setRetweet(countClean);
     }
-    
+    const ref =  useRef(null);
+    const downloadImage = async e => {
+        const dataUrl = await toPng(ref.current);
+        const link = document.createElement('a')
+        link.download = "tweet-image.png"
+        link.href = dataUrl
+        link.click();
+    }
+
     return (
         <>
         <div className={styles.hero}>
-            <section className={styles.twitCard}>
+            <h1>Tweet Generator</h1>
+            <section className={styles.twitCard} ref={ref}>
                 <picture className={styles.userImage}>
                     { avatar ? <img src={avatar} alt="avatar" /> : <UserImage/> }
                     
@@ -78,7 +90,7 @@ const TweetCard = () => {
                     </header>
                     <p dangerouslySetInnerHTML={{__html:addLinks(content) }}></p>
                     {
-                        image && 
+                        image &&
                         <div className={styles.images}>
                             <img src={image} alt="tweet image" />
                         </div>
@@ -103,31 +115,32 @@ const TweetCard = () => {
                 </div>
             </section>
         </div>
+        <div className={styles.bgWave}></div>
         <div className={styles.formInputs}>
             <div className={styles.container}>
                 <form >
                     <span>
-                        <label>Avatar</label>
+                        <label>Avatar:</label>
                         <input type="file" onChange={uploadAvatar} accept=".png, .jpg, .svg"/>
                     </span>
                     <span>
-                        <label>Name</label>
+                        <label>Name:</label>
                         <input type="text" onChange={e=>setName(e.target.value)} value={name}/>
                     </span>
                     <span>
-                        <label>Username</label>
+                        <label>Username:</label>
                         <input type="text" onChange={e=>setUsername(e.target.value)} value={username}/>
                     </span>
                     <span>
-                        <label>Tweet date</label>
+                        <label>Tweet date:</label>
                         <input type="datetime-local" onChange={handleDate} max={currentDate}/>
                     </span>
                     <span>
-                        <label>Tweet image</label>
+                        <label>Tweet image:</label>
                         <input type="file" onChange={uploadImage} accept=".png, .jpg, .svg"/>
                     </span>
                     <span>
-                        <button type='button' 
+                        <button type='button'
                             onClick={()=>setVerified(current=>!current)}
                             className={verified ? styles.btnVerified : ""}
                         >Verified
@@ -155,11 +168,17 @@ const TweetCard = () => {
                             <input type="number" onChange={handleRetweets}/>
                         </span>
                     </div>
+                    <button
+                        className={styles.btnDownload}
+                        type="button"
+                        onClick={downloadImage}
+                    >Download Tweet</button>
                 </form>
             </div>
+            
         </div>
         </>
     );
 }
-
+ 
 export default TweetCard;
